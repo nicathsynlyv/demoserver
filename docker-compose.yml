@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: nicat-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Nicat2005..
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - nicat-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  backend:
+    #    image: ghcr.io/${GITHUB_REPO_OWNER}/kamil-demo-backend:${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nicat-demo-dev
+    depends_on:
+      - db
+    ports:
+      - "8050:8030"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Nicat2005..
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - nicat-network
+
+networks:
+  nicat-network:
+    driver: bridge
+
+volumes:
+  db-data:
+   driver: local
